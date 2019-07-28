@@ -14,7 +14,10 @@ const Gallery = ({data,parentMethod}) => {
     
     return(
         <div className="gallery">
-            {Image}
+            <div className="gallery_images">
+             {Image}
+            </div>
+           
         </div>
     )
 }

@@ -1,88 +1,4 @@
-1. Fonts : https://fontawesome.com/icons?d=gallery
-
-import {FontAwesomeIcon}  from "@fortawesome/react-fontawesome";
-
-/****** Icons *****/
-import {faHome,faPlay,faImages,faVideo}  from "@fortawesome/free-solid-svg-icons";
-
-/****** Library for All types of icons *****/
-import { library } from '@fortawesome/fontawesome-svg-core';
-library.add(faHome,faPlay,faImages,faVideo);
-
- <FontAwesomeIcon icon={ linkItem.icon } />
-
-2. JSON: JSON Server : https://github.com/typicode/json-server
-    > npm install -g json-server 
-    > json-server --watch db.json --port 3001
-    > now we can access our data in browser 
-    > import axios from 'axios';
-    
-
-
-3. React Bootstrap  : https://react-bootstrap.github.io/getting-started/introduction/
-
-    > import {Carousel} from 'react-bootstrap';
-    > import { Card , Container, Row, Col, Image} from  'react-bootstrap';
-     
-4. Material UI React : https://material-ui.com
-                      npm install @material-ui/core
-                      npm install @material-ui/icons    
-                    > https://www.materialui.co/icons?s=images
-
-
-5. App Bar : https://material-ui.com/components/app-bar
-
-
-6. Post Card : https://material-ui.com/components/cards
-
-7. Shadow : https://material-ui.com/system/shadows
-
-8. Bottom navigation
-
-9. Themes : https://themes.material-ui.com/ 
-
-10. Git : 
-    >   git --version 
-    >   git init 
-    >   git status  
-    >   git add <files>
-    >   .gitignore file for ignoring files in git 
-    >   git add . : for all files 
-    >   git commit -m "first commit"
-    >   git config --global user.email "prakash.raoinfotech@gmail.com"
-    >   git config --global user.name "prakash karena"
-    >   install : source tree 
-
-11. Github : https://github.com/Prkarena/rao
-    >   online : github account > settings > SSH and GPG keys > 
-    >   url > helps.github.com/articles/checking-for-existing-ssh-keys
-    >   open git base > 
-        >   ls -al ~/.ssh
-        >   generate new ssh key : https://help.github.com/en/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
-             >   ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
-        >   clip < ~/.ssh/id_rsa.pub
-        >   Add SSH key to github Account 
-        >   Add SSH Agent to github : 
-            >   eval $(ssh-agent -s) 
-            >   ssh-add ~/.ssh/id_rsa
-            >   ssh -T git@github.com
-
-
-        >Creating Repo in github : rao
-        >git remote add origin https://github.com/Prkarena/rao.git
-        >git push -u origin master.
-
-12. Heroku : karenaprakash14@gmail.com  , karenaprakash@123
->   install heroku cli : 64 bit 
->   cmd :  heroku --help
-        :   heroku login 
-        :   heroku keys:add
-
-
-
-
-
-=============================== Project create npm for gallery ===================================
+============================== Project create npm for gallery ===================================
 
 1. index.js 
 > call api
@@ -97,3 +13,362 @@ library.add(faHome,faPlay,faImages,faVideo);
 
 4. galleryimage.js
 >  return galleryimage to gallery
+
+
+
+1. index.js
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+/*------- index.css : For Style ---------- */
+import './css/index.css';
+/*-------- Components ---------------------*/
+import Slider from './components/Slider/slider';
+import Gallery from './components/Gallery/gallery';
+
+class App extends Component {
+
+    state = {
+        data : [],
+        dataItem : {},
+        isLoaded : false,
+        showSlider : false,
+    }
+
+    componentWillMount(){
+        fetch('https://picsum.photos/v2/list?page=1&limit=16')
+             .then(response => response.json())
+             .then(json => {
+                 this.setState({
+                     data : json,
+                     isLoaded : true,
+                     dataItem : json[0]
+                 })
+             })
+    }
+
+    showSlider = (show) => {
+        this.setState({
+            showSlider : show,
+        })
+    }
+   
+    setIndex = (i) => {
+       this.setState({
+           dataItem : this.state.data[i],
+       })
+       this.showSlider(true)
+    }
+
+   
+    render(){
+        const { isLoaded , data , dataItem ,showSlider} = this.state;        
+        if(!isLoaded){
+            return<div>Loading....</div>
+        }else{
+            return(                  
+                    <div>
+                        <Slider data = { data }  parentMethod = { this.showSlider } dataItem = {dataItem} showSlider = {showSlider} />
+                        <Gallery data = { data } parentMethod = {this.setIndex} />
+                        
+                    </div>                
+            )
+        }
+
+        
+    }
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
+
+export default App;
+
+
+2. slider.js
+
+import React , { Component } from 'react';
+/*------- slider.css : For Style ---------- */
+import './slider.css';
+/*-------- Components ---------------------*/
+import SliderTemplate from '../SliderTemplate/slidertemplate';
+
+class Slider extends Component {
+    state = {
+        data : this.props.data,
+        dataItem : this.props.dataItem ,
+        showSlider : this.props.showSlider,
+    }
+
+    nextDataItem = () => {
+        const newIndex = this.state.data.indexOf(this.state.dataItem)+1 ;
+        this.setState({
+            dataItem : this.props.data[newIndex]
+        })
+    }
+
+    prewDataItem = () => {
+        const newIndex = this.state.data.indexOf(this.state.dataItem)-1 ;
+        this.setState({
+            dataItem : this.props.data[newIndex]
+        })
+    }
+
+    componentWillReceiveProps(newProps){
+        if(this.props.dataItem === newProps.dataItem){
+            return;
+        }else{
+            this.setState({
+                dataItem : newProps.dataItem
+            })
+        }
+    }
+
+    componentWillUpdate(newProps,newState){
+        newState.showSlider = newProps.showSlider;
+    }
+
+    showSlider = (show) => {
+       this.props.parentMethod(show)
+    }
+      
+   render(){
+    
+        let { data , dataItem, showSlider } = this.state;
+        let index = data.indexOf(dataItem);
+        let divStyle ={}
+
+        if(showSlider){
+         divStyle ={
+                display : 'block'
+            }
+        }else{
+            divStyle ={
+                display : 'none'
+            }
+        }
+    
+        
+        return(
+            <div className="slider"
+                 style = {divStyle}
+            >
+                <div className="slider_background"></div>
+                <div
+                  className="close_button"
+                >
+                    <button
+                    onClick = {() => this.showSlider(false)}
+                    >X</button>
+                
+                </div>
+                <div className="sliderButton">
+                    <button 
+                    onClick = { () => this.prewDataItem() }
+                    disabled = { data.indexOf(dataItem) === 0 }
+                    className = "buttonPrew"
+                    >
+                        P              
+                    </button>
+                    <button 
+                    onClick = { () => this.nextDataItem() }
+                    disabled = { data.indexOf(dataItem) === data.length-1}
+                    className = "buttonNext"
+                    >
+                        N  
+                    </button>
+                </div>
+                <SliderTemplate property = { dataItem } index = { index } />
+            </div>
+        )
+   }
+}
+
+export default Slider;
+
+2.1 slidertemplate.js
+
+import React from 'react';
+/*------- slidertemplate.css : For Style ---------- */
+import './slidertemplate.css';
+
+const SliderTemplate = ({property,index}) => {
+    const { download_url, author } = property;
+    return(
+        <div 
+         id = {`image-${index}`}
+         className = "image" 
+         >
+           <img src={download_url} alt={author} />
+        </div>
+    )
+}
+
+export default SliderTemplate;
+
+
+3. gallery.js
+
+
+import React from 'react';
+/*------- gallery.css : For Style ---------- */
+import './gallery.css';
+/*-------- Components ---------------------*/
+import GalleryImage from '../GalleryImage/galleryimage';
+
+const Gallery = ({data,parentMethod}) => {
+    
+    const Image = data.map((item,index) => {
+        return(
+            <GalleryImage data = { item } index = { index } parentMethod ={parentMethod} key = {index} />
+        )
+    })
+    
+    return(
+        <div className="gallery">
+            {Image}
+        </div>
+    )
+}
+
+export default Gallery;
+
+
+4. GalleryImage.js
+
+import React , { Component } from 'react';
+/*------- galleryimage.css : For Style ---------- */
+import './galleryimage.css';
+
+
+class GalleryImage extends Component   {
+
+   
+
+    setDataItemIndex = () => {
+        this.props.parentMethod(this.props.index);
+    }
+
+
+render(){
+    //console.log(this.props.index)
+    return(
+        <div className="galleryImage" 
+            onClick = {this.setDataItemIndex}
+        >
+             <img src={this.props.data.download_url} alt={this.props.data.author} />
+        </div>
+    )
+}
+   
+}
+
+export default GalleryImage;
+
+
+
+================================
+
+sliderwithgallery.js 
+
+
+import React , { Component } from 'react';
+/*------- slider.css : For Style ---------- */
+import './sliderwithgallery.css';
+/*-------- Components ---------------------*/
+import SliderTemplate from '../SliderTemplate/slidertemplate';
+import Gallery from '../Gallery/gallery';
+
+class SliderWithGallery extends Component {
+    
+    state = {
+        data : this.props.data,
+        dataItem : this.props.data[0],
+        showSlider : false,
+    }
+
+    nextDataItem = () => {
+        const newIndex = this.state.data.indexOf(this.state.dataItem)+1 ;
+        this.setState({
+            dataItem : this.props.data[newIndex]
+        })
+    }
+
+    prewDataItem = () => {
+        const newIndex = this.state.data.indexOf(this.state.dataItem)-1 ;
+        this.setState({
+            dataItem : this.props.data[newIndex]
+        })
+    }
+
+    showSlider = (show) => {
+        this.setState({
+            showSlider : show,
+        })
+    }
+
+    setIndex = (i) => {
+        this.setState({
+            dataItem : this.state.data[i],
+        })
+        this.showSlider(true)
+     }
+      
+   render(){
+    
+        let { data , dataItem, showSlider } = this.state;
+        let divStyle ={}
+
+        if(showSlider){
+         divStyle ={
+                display : 'block'
+            }
+        }else{
+            divStyle ={
+                display : 'none'
+            }
+        }
+    
+        
+        return(
+
+            <div className="sliderWithGallery">
+              <div className="slider"
+                 style = {divStyle}
+                  >
+                <div className="slider_background"></div>
+                <div
+                  className="close_button"
+                >
+                    <button
+                    onClick = {() => this.showSlider(false)}
+                    >X</button>
+                
+                </div>
+                <div className="sliderButton">
+                    <button 
+                    onClick = { () => this.prewDataItem() }
+                    disabled = { data.indexOf(dataItem) === 0 }
+                    className = "buttonPrew"
+                    >
+                        P              
+                    </button>
+                    <button 
+                    onClick = { () => this.nextDataItem() }
+                    disabled = { data.indexOf(dataItem) === data.length-1}
+                    className = "buttonNext"
+                    >
+                        N  
+                    </button>
+                </div>
+                <SliderTemplate property = { dataItem } />
+               </div>
+
+               <Gallery data = { data } parentMethod = {this.setIndex} />
+
+
+            </div>
+            
+        )
+   }
+}
+
+export default SliderWithGallery;

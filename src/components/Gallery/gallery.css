@@ -1,3 +1,9 @@
 .gallery{
-  padding: 20px;
+  width: 100%;
+  padding: 0px;
+  margin : 0px;
+}
+
+.gallery_images{
+  padding: 60px;
 }

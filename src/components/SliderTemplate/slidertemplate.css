@@ -15,7 +15,8 @@
     }
     .image img{
         width: 85%;
-        height: 350px;
+        height: auto;
+        max-height: 500px;
     } 
 }
 
@@ -25,17 +26,19 @@
     }
     .image img{
         width: 85%;
-        height: 350px;
+        height: auto;
+        max-height: 400px;
     }   
 }
 
 @media only screen and (max-width: 500px){
     .image{
-        margin-top: 150px;
+        margin-top: 200px;
     }
     .image img{
         width: 80%;
-        height: 250px;
+        height: auto;
+        max-height: 200px;
     } 
     
 }

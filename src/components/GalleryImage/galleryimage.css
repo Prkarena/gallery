@@ -6,13 +6,27 @@ padding: 2px;
 .galleryImage img{
     width: 150px;
     height: 120px;
+    transition: width 5s;
 } 
+
+.galleryImage img:hover {
+    width: 152px;
+    height: 121px;   
+}
+
+
 @media only screen and (max-width: 800px){
    
     .galleryImage img{
         width: 100px;
         height: 80px;
-    }     
+    }   
+    
+    .galleryImage img:hover {
+        width: 101px;
+        height: 81px;
+       
+    }
 }
 
 @media only screen and (max-width: 500px){
@@ -23,6 +37,11 @@ padding: 2px;
         height: 60px;
     } 
     
+    .galleryImage img:hover {
+        width: 71px;
+        height: 61px;
+       
+    }
     
 }
 

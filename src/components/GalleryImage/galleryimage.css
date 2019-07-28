@@ -1,0 +1,28 @@
+.galleryImage{
+display: inline;
+padding: 2px;
+}
+
+.galleryImage img{
+    width: 150px;
+    height: 120px;
+} 
+@media only screen and (max-width: 800px){
+   
+    .galleryImage img{
+        width: 100px;
+        height: 80px;
+    }     
+}
+
+@media only screen and (max-width: 500px){
+
+    
+    .galleryImage img{
+        width: 70px;
+        height: 60px;
+    } 
+    
+    
+}
+

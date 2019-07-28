@@ -2,11 +2,10 @@
 
 1. index.js 
 > call api
-> show slider 
-> show gallery
+> sliderwithgallery
 
-2. slider.js
-> return slider 
+2. sliderwithgallery.js
+> return sliderwithgallery
 
 3. gallery.js 
 > return gallery
@@ -17,85 +16,95 @@
 
 
 1. index.js
+/**
+ * 
+ * index.js
+ * 1. index.css : for style
+ * 2. SliderWithGallery : Component which takes json data and give's gallery with slider
+ * 3. state : 
+ *    3.1 data : for storing our data
+ *    3.2 isLoaded : for chacking data is loaded or not
+ * 4. fetch : fetch response from url and change states 
+ * 
+ */
+
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 /*------- index.css : For Style ---------- */
 import './css/index.css';
 /*-------- Components ---------------------*/
-import Slider from './components/Slider/slider';
-import Gallery from './components/Gallery/gallery';
+import SliderWithGallery from './components/SliderWithGallery/sliderwithgallery';
 
 class App extends Component {
 
     state = {
         data : [],
-        dataItem : {},
         isLoaded : false,
-        showSlider : false,
     }
 
     componentWillMount(){
-        fetch('https://picsum.photos/v2/list?page=1&limit=16')
+        fetch('https://picsum.photos/v2/list?page=1&limit=30')
              .then(response => response.json())
              .then(json => {
                  this.setState({
                      data : json,
-                     isLoaded : true,
-                     dataItem : json[0]
+                     isLoaded : true
                  })
              })
     }
 
-    showSlider = (show) => {
-        this.setState({
-            showSlider : show,
-        })
-    }
-   
-    setIndex = (i) => {
-       this.setState({
-           dataItem : this.state.data[i],
-       })
-       this.showSlider(true)
-    }
-
-   
     render(){
-        const { isLoaded , data , dataItem ,showSlider} = this.state;        
+        const { isLoaded , data} = this.state;
+        /*---- data is loaded or not ------*/        
         if(!isLoaded){
             return<div>Loading....</div>
         }else{
             return(                  
                     <div>
-                        <Slider data = { data }  parentMethod = { this.showSlider } dataItem = {dataItem} showSlider = {showSlider} />
-                        <Gallery data = { data } parentMethod = {this.setIndex} />
-                        
+                        <SliderWithGallery data = {data}  />
                     </div>                
             )
         }
 
-        
+  
     }
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
-export default App;
 
-
-2. slider.js
+2. sliderwithgallery.js
+/**
+ * 
+ * SliderWithGallery
+ *  1. sliderwithgallery.css : for style
+ *  2. Components : 
+ *     2.1 SliderTemplate : takes one object of our data and set it to slider
+ *     2.2 Gallery : takes data and setIndex method and gave us image gallery 
+ *  3. state : 
+ *     3.1 data : data from props
+ *     3.2 dataItem : store dataItem from our data
+ *     3.3 show : bollen - true : for show slider and false for hide slider
+ *  4. nextDataItem : function which set next data item to state
+ *  5. prewDataItem : function which set previous data item to state
+ *  6. showSlider : function which handle slider show or not using state variable show
+ *  7. setIndex : function which set Index of dataitem to be shown in slider
+ * 
+ */
 
 import React , { Component } from 'react';
 /*------- slider.css : For Style ---------- */
-import './slider.css';
+import './sliderwithgallery.css';
 /*-------- Components ---------------------*/
 import SliderTemplate from '../SliderTemplate/slidertemplate';
+import Gallery from '../Gallery/gallery';
 
-class Slider extends Component {
+class SliderWithGallery extends Component {
+    
     state = {
         data : this.props.data,
-        dataItem : this.props.dataItem ,
-        showSlider : this.props.showSlider,
+        dataItem : this.props.data[0],
+        show : false,
     }
 
     nextDataItem = () => {
@@ -112,32 +121,27 @@ class Slider extends Component {
         })
     }
 
-    componentWillReceiveProps(newProps){
-        if(this.props.dataItem === newProps.dataItem){
-            return;
-        }else{
-            this.setState({
-                dataItem : newProps.dataItem
-            })
-        }
-    }
-
-    componentWillUpdate(newProps,newState){
-        newState.showSlider = newProps.showSlider;
-    }
-
     showSlider = (show) => {
-       this.props.parentMethod(show)
+        this.setState({
+            show : show,
+        })
     }
-      
-   render(){
-    
-        let { data , dataItem, showSlider } = this.state;
-        let index = data.indexOf(dataItem);
-        let divStyle ={}
 
-        if(showSlider){
-         divStyle ={
+    setIndex = (i) => {
+        this.setState({
+            dataItem : this.state.data[i],
+        })
+        this.showSlider(true)
+     }
+      
+    render(){
+
+        let { data , dataItem, show } = this.state;
+        {/*---- style of slider ---*/}
+        let divStyle ={};
+        {/*---- slider show or not ---*/}
+        if(show){
+            divStyle ={
                 display : 'block'
             }
         }else{
@@ -145,59 +149,73 @@ class Slider extends Component {
                 display : 'none'
             }
         }
-    
+
         
         return(
-            <div className="slider"
-                 style = {divStyle}
-            >
-                <div className="slider_background"></div>
-                <div
-                  className="close_button"
-                >
-                    <button
-                    onClick = {() => this.showSlider(false)}
-                    >X</button>
-                
-                </div>
-                <div className="sliderButton">
-                    <button 
-                    onClick = { () => this.prewDataItem() }
-                    disabled = { data.indexOf(dataItem) === 0 }
-                    className = "buttonPrew"
+            
+            <div className="sliderWithGallery">
+                {/*---- slider start ---*/}
+                <div className="slider"
+                    style = {divStyle}
                     >
-                        P              
-                    </button>
-                    <button 
-                    onClick = { () => this.nextDataItem() }
-                    disabled = { data.indexOf(dataItem) === data.length-1}
-                    className = "buttonNext"
+                    {/*---- slider background div ---*/}
+                    <div className="slider_background"></div>
+                    {/*---- Close button ---*/}
+                   <div
+                    className="close_button"
                     >
-                        N  
-                    </button>
+                        <button
+                        onClick = {() => this.showSlider(false)}
+                        >X</button>
+                    </div>
+                    {/*---- slider previous and next button start ---*/}
+                    <div className="sliderButton">
+                        <button 
+                        onClick = { () => this.prewDataItem() }
+                        disabled = { data.indexOf(dataItem) === 0 }
+                        className = "buttonPrew"
+                        >
+                            P              
+                        </button>
+                        <button 
+                        onClick = { () => this.nextDataItem() }
+                        disabled = { data.indexOf(dataItem) === data.length-1}
+                        className = "buttonNext"
+                        >
+                            N  
+                        </button>
+                       </div>
+                       {/*---- slider previous and next button end ---*/}
+                    {/*---- sliderTemplate : takes one object and set it to slider ---*/}
+                    <SliderTemplate property = { dataItem } />
                 </div>
-                <SliderTemplate property = { dataItem } index = { index } />
+                {/*---- slider end ---*/}
+                {/*---- Gallery : takes data and return image gallery ---*/}
+                <Gallery data = { data } parentMethod = {this.setIndex} />
             </div>
         )
-   }
+    }
 }
 
-export default Slider;
+export default SliderWithGallery;
 
 2.1 slidertemplate.js
-
+/**
+ * 
+ * SliderTemplate : take one object and set it to slider 
+ * 
+ */
 import React from 'react';
 /*------- slidertemplate.css : For Style ---------- */
 import './slidertemplate.css';
 
-const SliderTemplate = ({property,index}) => {
+const SliderTemplate = ({property}) => {
     const { download_url, author } = property;
     return(
         <div 
-         id = {`image-${index}`}
          className = "image" 
          >
-           <img src={download_url} alt={author} />
+           <img src={download_url} className="responsive" alt={author} />
         </div>
     )
 }
@@ -207,6 +225,12 @@ export default SliderTemplate;
 
 3. gallery.js
 
+/**
+ * 
+ * Gallery : get data from props > call GalleryImage Component for each items
+ * GalleryImage : takes one object and parentMethod from props and return images 
+ * 
+ */
 
 import React from 'react';
 /*------- gallery.css : For Style ---------- */
@@ -224,7 +248,10 @@ const Gallery = ({data,parentMethod}) => {
     
     return(
         <div className="gallery">
-            {Image}
+            <div className="gallery_images">
+             {Image}
+            </div>
+           
         </div>
     )
 }
@@ -233,142 +260,33 @@ export default Gallery;
 
 
 4. GalleryImage.js
-
+/**
+ * 
+ * GalleryImage : recive props and return gallery image
+ * download_url : image src from json object 
+ * 
+ */
 import React , { Component } from 'react';
 /*------- galleryimage.css : For Style ---------- */
 import './galleryimage.css';
 
-
-class GalleryImage extends Component   {
-
-   
-
-    setDataItemIndex = () => {
-        this.props.parentMethod(this.props.index);
+const GalleryImage = (props) => {
+    /*------ set index using parent method for which slide to be shown on image click-----*/
+    const  setDataItemIndex = () => {
+        props.parentMethod(props.index);
     }
 
-
-render(){
-    //console.log(this.props.index)
     return(
         <div className="galleryImage" 
-            onClick = {this.setDataItemIndex}
+            onClick = {setDataItemIndex}
         >
-             <img src={this.props.data.download_url} alt={this.props.data.author} />
+             <img src={props.data.download_url} alt={props.data.author} />
         </div>
     )
-}
+
    
 }
 
 export default GalleryImage;
 
 
-
-================================
-
-sliderwithgallery.js 
-
-
-import React , { Component } from 'react';
-/*------- slider.css : For Style ---------- */
-import './sliderwithgallery.css';
-/*-------- Components ---------------------*/
-import SliderTemplate from '../SliderTemplate/slidertemplate';
-import Gallery from '../Gallery/gallery';
-
-class SliderWithGallery extends Component {
-    
-    state = {
-        data : this.props.data,
-        dataItem : this.props.data[0],
-        showSlider : false,
-    }
-
-    nextDataItem = () => {
-        const newIndex = this.state.data.indexOf(this.state.dataItem)+1 ;
-        this.setState({
-            dataItem : this.props.data[newIndex]
-        })
-    }
-
-    prewDataItem = () => {
-        const newIndex = this.state.data.indexOf(this.state.dataItem)-1 ;
-        this.setState({
-            dataItem : this.props.data[newIndex]
-        })
-    }
-
-    showSlider = (show) => {
-        this.setState({
-            showSlider : show,
-        })
-    }
-
-    setIndex = (i) => {
-        this.setState({
-            dataItem : this.state.data[i],
-        })
-        this.showSlider(true)
-     }
-      
-   render(){
-    
-        let { data , dataItem, showSlider } = this.state;
-        let divStyle ={}
-
-        if(showSlider){
-         divStyle ={
-                display : 'block'
-            }
-        }else{
-            divStyle ={
-                display : 'none'
-            }
-        }
-    
-        
-        return(
-
-            <div className="sliderWithGallery">
-              <div className="slider"
-                 style = {divStyle}
-                  >
-                <div className="slider_background"></div>
-                <div
-                  className="close_button"
-                >
-                    <button
-                    onClick = {() => this.showSlider(false)}
-                    >X</button>
-                
-                </div>
-                <div className="sliderButton">
-                    <button 
-                    onClick = { () => this.prewDataItem() }
-                    disabled = { data.indexOf(dataItem) === 0 }
-                    className = "buttonPrew"
-                    >
-                        P              
-                    </button>
-                    <button 
-                    onClick = { () => this.nextDataItem() }
-                    disabled = { data.indexOf(dataItem) === data.length-1}
-                    className = "buttonNext"
-                    >
-                        N  
-                    </button>
-                </div>
-                <SliderTemplate property = { dataItem } />
-               </div>
-
-               <Gallery data = { data } parentMethod = {this.setIndex} />
-
-
-            </div>
-            
-        )
-   }
-}
-
-export default SliderWithGallery;

@@ -1,3 +1,15 @@
+/**
+ * 
+ * index.js
+ * 1. index.css : for style
+ * 2. SliderWithGallery : Component which takes json data and give's gallery with slider
+ * 3. state : 
+ *    3.1 data : for storing our data
+ *    3.2 isLoaded : for chacking data is loaded or not
+ * 4. fetch : fetch response from url and change states 
+ * 
+ */
+
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 /*------- index.css : For Style ---------- */
@@ -13,7 +25,7 @@ class App extends Component {
     }
 
     componentWillMount(){
-        fetch('https://picsum.photos/v2/list?page=1&limit=16')
+        fetch('https://picsum.photos/v2/list?page=1&limit=30')
              .then(response => response.json())
              .then(json => {
                  this.setState({
@@ -24,7 +36,8 @@ class App extends Component {
     }
 
     render(){
-        const { isLoaded , data} = this.state;        
+        const { isLoaded , data} = this.state;
+        /*---- data is loaded or not ------*/        
         if(!isLoaded){
             return<div>Loading....</div>
         }else{

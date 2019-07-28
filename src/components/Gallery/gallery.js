@@ -1,3 +1,10 @@
+/**
+ * 
+ * Gallery : get data from props > call GalleryImage Component for each items
+ * GalleryImage : takes one object and parentMethod from props and return images 
+ * 
+ */
+
 import React from 'react';
 /*------- gallery.css : For Style ---------- */
 import './gallery.css';

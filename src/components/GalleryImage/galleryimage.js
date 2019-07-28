@@ -1,27 +1,27 @@
+/**
+ * 
+ * GalleryImage : recive props and return gallery image
+ * download_url : image src from json object 
+ * 
+ */
 import React , { Component } from 'react';
 /*------- galleryimage.css : For Style ---------- */
 import './galleryimage.css';
 
-
-class GalleryImage extends Component   {
-
-   
-
-    setDataItemIndex = () => {
-        this.props.parentMethod(this.props.index);
+const GalleryImage = (props) => {
+    /*------ set index using parent method for which slide to be shown on image click-----*/
+    const  setDataItemIndex = () => {
+        props.parentMethod(props.index);
     }
 
-
-render(){
-    //console.log(this.props.index)
     return(
         <div className="galleryImage" 
-            onClick = {this.setDataItemIndex}
+            onClick = {setDataItemIndex}
         >
-             <img src={this.props.data.download_url} alt={this.props.data.author} />
+             <img src={props.data.download_url} alt={props.data.author} />
         </div>
     )
-}
+
    
 }
 

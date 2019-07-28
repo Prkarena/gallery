@@ -1,3 +1,8 @@
+/**
+ * 
+ * SliderTemplate : take one object and set it to slider 
+ * 
+ */
 import React from 'react';
 /*------- slidertemplate.css : For Style ---------- */
 import './slidertemplate.css';
